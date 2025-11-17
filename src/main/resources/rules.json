@@ -1,0 +1,236 @@
+[
+  {
+    "id": "sql_injection_union_select",
+    "type": "regex",
+    "description": "SQL injection attempts using UNION, SELECT, INSERT, DROP, UPDATE patterns",
+    "severity": "HIGH",
+    "pattern": "(?i)(union\\s+select|or\\s+1=1|insert\\s+into|drop\\s+table|update\\s+.+set|select\\s+.+\\s+from)",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "sql_injection_tautology",
+    "type": "regex",
+    "description": "Login bypass or tautology based SQLi attempts",
+    "severity": "HIGH",
+    "pattern": "(?i)(\\'\\s*or\\s*\\'1\\'=\\'1|\\\"\\s*or\\s*\\\"1\\\"=\\\"1|or\\s+1=1)",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "sqli_time_based",
+    "type": "regex",
+    "description": "SQL injection using time-delay payloads (SLEEP, BENCHMARK)",
+    "severity": "HIGH",
+    "pattern": "(?i)(sleep\\s*\\(|benchmark\\s*\\(|waitfor\\s+delay)",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "xss_inline_script",
+    "type": "regex",
+    "description": "Inline XSS via script tags, javascript: URLs, or event handlers",
+    "severity": "HIGH",
+    "pattern": "(?i)(<script|javascript:|onerror\\s*=|onload\\s*=|alert\\(|prompt\\()",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "xss_svg_payloads",
+    "type": "regex",
+    "description": "SVG-based XSS via embedded script or onload attributes",
+    "severity": "MEDIUM",
+    "pattern": "(?i)(<svg[^>]+onload=|<svg[^>]+xlink:href=)",
+    "fields": ["body"]
+  },
+  {
+    "id": "path_traversal",
+    "type": "regex",
+    "description": "Path traversal attempts using ../ or encoded sequences",
+    "severity": "HIGH",
+    "pattern": "(?i)(\\.\\.\\/|\\.\\.\\\\|\\%2e\\%2e\\%2f|\\%2e\\%2e\\%5c)",
+    "fields": ["path", "params"]
+  },
+  {
+    "id": "local_file_inclusion",
+    "type": "regex",
+    "description": "Local file inclusion attempts (PHP wrappers, passwd, config files)",
+    "severity": "HIGH",
+    "pattern": "(?i)(php://filter|/etc/passwd|\\.env|wp-config\\.php|configuration\\.php|settings\\.py)",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "remote_file_inclusion",
+    "type": "regex",
+    "description": "Remote file inclusion attempts with URLs inside input",
+    "severity": "HIGH",
+    "pattern": "(?i)(https?:\\/\\/|ftp:\\/\\/|data:text\\/html)[^\\s]{10,}",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "command_injection_unix",
+    "type": "regex",
+    "description": "Command injection with shell metacharacters or OS commands",
+    "severity": "HIGH",
+    "pattern": "(?i)(;\\s*(ls|cat|whoami|uname)|\\|\\s*(ls|cat)|`.+`|\\b(wget|curl|bash|sh)\\b)",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "rce_java_log4shell_headers",
+    "type": "regex",
+    "description": "Log4Shell attempts via User-Agent or request headers",
+    "severity": "CRITICAL",
+    "pattern": "(?i)(\\$\\{jndi:ldap|\\$\\{jndi:rmi|\\$\\{jndi:dns)",
+    "fields": ["headers"]
+  },
+  {
+    "id": "rce_java_log4shell_body",
+    "type": "regex",
+    "description": "Log4Shell attempts inside HTTP body or parameters",
+    "severity": "CRITICAL",
+    "pattern": "(?i)(\\$\\{jndi:ldap|\\$\\{jndi:rmi|\\$\\{jndi:dns)",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "ssrf_metadata",
+    "type": "regex",
+    "description": "SSRF targeting cloud metadata endpoints (AWS/GCP/Azure)",
+    "severity": "HIGH",
+    "pattern": "(?i)(169\\.254\\.169\\.254|metadata\\.google|instance-data\\.amazonaws\\.com|metadata\\.azure)",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "xml_xxe_payload",
+    "type": "regex",
+    "description": "XML External Entity (XXE) payloads using DOCTYPE/SYSTEM/ENTITY",
+    "severity": "HIGH",
+    "pattern": "(?i)(<!DOCTYPE|<!ENTITY|SYSTEM\\s+['\"]file:)",
+    "fields": ["body"]
+  },
+  {
+    "id": "deserialization_java",
+    "type": "regex",
+    "description": "Java deserialization gadget references or serialized payload markers",
+    "severity": "CRITICAL",
+    "pattern": "(?i)(serialVersionUID|java\\.io\\.ObjectInputStream|rO0AB)",
+    "fields": ["body"]
+  },
+  {
+    "id": "open_redirect",
+    "type": "regex",
+    "description": "Open redirect attempts in URL or redirect params",
+    "severity": "MEDIUM",
+    "pattern": "(?i)(\\bredirect=|\\burl=|\\bnext=|\\breturn=).*(https?:\\/\\/)",
+    "fields": ["params", "path"]
+  },
+  {
+    "id": "jwt_token_exfil_headers",
+    "type": "regex",
+    "description": "Suspicious JWT or token exfiltration pattern inside headers",
+    "severity": "MEDIUM",
+    "pattern": "(?i)(eyJ[a-zA-Z0-9_\\-]{10,}\\.[a-zA-Z0-9_\\-]{10,}\\.[a-zA-Z0-9_\\-]{10,})",
+    "fields": ["headers"]
+  },
+  {
+    "id": "jwt_token_exfil_params",
+    "type": "regex",
+    "description": "Suspicious JWT or token exfiltration pattern inside URL parameters",
+    "severity": "MEDIUM",
+    "pattern": "(?i)(eyJ[a-zA-Z0-9_\\-]{10,}\\.[a-zA-Z0-9_\\-]{10,}\\.[a-zA-Z0-9_\\-]{10,})",
+    "fields": ["params"]
+  },
+  {
+    "id": "xss_cookie_theft",
+    "type": "regex",
+    "description": "Cookie-stealing XSS indicators like document.cookie or fetch() exfil",
+    "severity": "HIGH",
+    "pattern": "(?i)(document\\.cookie|fetch\\(.+http|XMLHttpRequest\\(.+http)",
+    "fields": ["body"]
+  },
+  {
+    "id": "prototype_pollution",
+    "type": "regex",
+    "description": "Prototype pollution indicators in JSON keys",
+    "severity": "HIGH",
+    "pattern": "(?i)(__proto__|constructor\\.prototype|prototype\\.|\"__proto__\")",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "ldap_injection",
+    "type": "regex",
+    "description": "LDAP injection payloads",
+    "severity": "HIGH",
+    "pattern": "(?i)(\\*\\)|\\(\\*\\)|\\(\\|\\)|\\(objectClass=\\*)",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "nosql_injection",
+    "type": "regex",
+    "description": "MongoDB or NoSQL injection payloads using $where/$ne/$regex",
+    "severity": "HIGH",
+    "pattern": "(?i)(\\$ne|\\$where|\\$regex|\\$gt|\\$lt|\\$in)",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "php_code_injection",
+    "type": "regex",
+    "description": "PHP code injection attempts",
+    "severity": "HIGH",
+    "pattern": "(?i)(eval\\(|assert\\(|system\\(|passthru\\(|exec\\(|shell_exec\\()",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "api_abuse_sensitive_endpoints",
+    "type": "regex",
+    "description": "API probing sensitive management or debug endpoints",
+    "severity": "MEDIUM",
+    "pattern": "(?i)(/swagger|/api-docs|/manage|/metrics|/env|/beans|/heapdump|/debug)",
+    "fields": ["path"]
+  },
+  {
+    "id": "file_upload_dangerous_extensions",
+    "type": "regex",
+    "description": "Suspicious file upload with dangerous extensions",
+    "severity": "HIGH",
+    "pattern": "(?i)filename\\s*=\\s*[^;]*\\.(php|jsp|asp|aspx|pl|sh)(\\W|$)",
+    "fields": ["body", "params"]
+  },
+  {
+    "id": "scanner_user_agents",
+    "type": "regex",
+    "description": "Known scanner or exploit tool user agents",
+    "severity": "LOW",
+    "pattern": "(?i)(sqlmap|nikto|acunetix|wpscan|nmap|zaproxy|owasp|fuzz|curl|wget|masscan)",
+    "fields": ["any"]
+  },
+  {
+    "id": "cve_log4j_payloads_headers",
+    "type": "regex",
+    "description": "Log4Shell CVE-2021-44228 payloads in HTTP headers",
+    "severity": "CRITICAL",
+    "pattern": "(?i)(\\$\\{jndi:ldap|\\$\\{env:|\\$\\{sys:|\\$\\{lower:|\\$\\{upper:)",
+    "fields": ["headers"]
+  },
+  {
+    "id": "cve_log4j_payloads_body",
+    "type": "regex",
+    "description": "Log4Shell CVE-2021-44228 payloads in HTTP body",
+    "severity": "CRITICAL",
+    "pattern": "(?i)(\\$\\{jndi:ldap|\\$\\{env:|\\$\\{sys:|\\$\\{lower:|\\$\\{upper:)",
+    "fields": ["body"]
+  },
+  {
+    "id": "wordpress_bruteforce",
+    "type": "threshold",
+    "description": "Multiple failed WordPress login attempts in short window",
+    "severity": "HIGH",
+    "path": "/wp-login.php",
+    "windowSeconds": 300,
+    "threshold": 10
+  },
+  {
+    "id": "api_rate_limit",
+    "type": "threshold",
+    "description": "High request rate from same IP (DoS detection)",
+    "severity": "HIGH",
+    "path": "/",
+    "windowSeconds": 60,
+    "threshold": 200
+  }
+]
